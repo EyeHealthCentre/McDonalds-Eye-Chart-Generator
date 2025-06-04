@@ -17,7 +17,7 @@ radii = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
 font_sizes = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
 
 # Letters used in eye charts (no ambiguous ones)
-LETTERS = 'ABCDEFGHJKLMNOPRSTUVWXYZ'
+letters = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]*2
 
 # Create image and draw object
 img = Image.new("1", (IMG_SIZE, IMG_SIZE), "white")
@@ -47,18 +47,23 @@ draw.text((CENTER - w/2, CENTER - h/2), text, font=font_center, fill="black")
 for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
     angle_step = 360 / 8  # 8 letters per ring
     font = get_font(font_size)
-    
+    letters_in_ring: list[str] = list()
+
     for i in range(8):
         angle_deg = i * angle_step
         angle_rad = math.radians(angle_deg)
 
         # Get a random letter
-        letter = random.choice(LETTERS)
-        
+        letter_index = random.randrange(len(letters))
+        while letters[letter_index] in letters_in_ring:
+            letter_index = random.randrange(len(letters))
+        letter = letters.pop(letter_index)
+        letters_in_ring.append(letter)
+
         # Calculate position on the ring
         x = CENTER + radius * math.cos(angle_rad)
         y = CENTER + radius * math.sin(angle_rad)
-        
+
         # Center the text
         w, h = get_text_dimensions(letter, font)
         draw.text((x - w/2, y - h/2), letter, font=font, fill="black")
