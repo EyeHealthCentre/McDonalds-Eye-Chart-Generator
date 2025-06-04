@@ -64,5 +64,9 @@ for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
         draw.text((x - w/2, y - h/2), letter, font=font, fill="black")
 
 # Save image
-img.save("mcdonald_eye_chart.png")
+img.save("mcdonald_eye_chart.png", optimize=True, compress_level=9)
 print("Saved McDonald eye chart as 'mcdonald_eye_chart.png'")
+img.save("mcdonald_eye_chart.webp", lossless=True, quality=100, method=6)
+print("Saved McDonald eye chart as 'mcdonald_eye_chart.webp'")
+img.save("mcdonald_eye_chart.pdf")
+print("Saved McDonald eye chart as 'mcdonald_eye_chart.pdf'")

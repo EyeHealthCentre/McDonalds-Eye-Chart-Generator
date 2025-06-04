@@ -73,5 +73,9 @@ for radius, size in zip(radii, font_sizes):
         img.paste(icon_resized, (int(x), int(y)), icon_resized)
 
 # Save chart
-img.save("mcdonald_eye_chart_with_images.png")
-print("Saved McDonald eye chart with images as 'mcdonald_eye_chart_with_images.png'")
+img.save("mcdonald_eye_chart_images.png", optimize=True, compress_level=9)
+print("Saved McDonald eye chart as 'mcdonald_eye_chart_images.png'")
+img.save("mcdonald_eye_chart_images.webp", lossless=True, quality=100, method=6)
+print("Saved McDonald eye chart as 'mcdonald_eye_chart_images.webp'")
+img.save("mcdonald_eye_chart_images.pdf")
+print("Saved McDonald eye chart as 'mcdonald_eye_chart_images.pdf'")
