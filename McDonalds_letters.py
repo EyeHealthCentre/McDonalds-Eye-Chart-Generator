@@ -3,12 +3,12 @@ import math
 import random
 
 # === Configuration ===
-DPI = 300
+DPI = 1200
 INCHES = 12
 IMG_SIZE = DPI * INCHES  # 3600x3600 px
 CENTER = IMG_SIZE // 2
-RADII_SCALING_FACTOR = 1800
-FONT_SIZE_SCALING_FACTOR = 50
+RADII_SCALING_FACTOR = DPI * 6
+FONT_SIZE_SCALING_FACTOR = int(DPI / 6)
 
 # Radii for the 4 rings (evenly spaced within the canvas)
 radii = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
@@ -20,7 +20,7 @@ font_sizes = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
 LETTERS = 'ABCDEFGHJKLMNOPRSTUVWXYZ'
 
 # Create image and draw object
-img = Image.new("RGB", (IMG_SIZE, IMG_SIZE), "white")
+img = Image.new("1", (IMG_SIZE, IMG_SIZE), "white")
 draw = ImageDraw.Draw(img)
 
 # Load a font (you can replace this with a path to a font you prefer)
@@ -38,7 +38,7 @@ def get_text_dimensions(text, font):
     return width, height
 
 # Draw central X
-font_center = get_font(40)
+font_center = get_font(FONT_SIZE_SCALING_FACTOR)
 text = "X"
 w, h = get_text_dimensions(text, font_center)
 draw.text((CENTER - w/2, CENTER - h/2), text, font=font_center, fill="black")
