@@ -4,12 +4,12 @@ import random
 import os
 
 # === Configuration ===
-DPI = 300
+DPI = 1200
 INCHES = 12
 IMG_SIZE = DPI * INCHES  # 3600x3600 px
 CENTER = IMG_SIZE // 2
-RADII_SCALING_FACTOR = 1800
-FONT_SIZE_SCALING_FACTOR = 50
+RADII_SCALING_FACTOR = DPI * 6
+FONT_SIZE_SCALING_FACTOR = int(DPI / 6)
 
 # Radii for the 4 rings (evenly spaced within the canvas)
 radii = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
@@ -20,10 +20,7 @@ font_sizes = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
 # List of image file paths to randomly choose from
 # Replace these with actual valid file paths on your system
 image_paths = [
-    r"K:\Photos Videos\Car Dash Pictures\OP6T_IMG_20240726_131845.jpg",
-    r"K:\Photos Videos\Car Dash Pictures\OP6T_IMG_20240726_225148.jpg",
-    r"K:\Photos Videos\Car Dash Pictures\OP6T_IMG_20240802_063716.jpg",
-    r"K:\Photos Videos\Car Dash Pictures\OP6T_IMG_20240831_152810.jpg"
+    r""
 ]
 
 # Load and validate image paths
@@ -49,7 +46,7 @@ def get_font(size):
         return ImageFont.load_default()
 
 # Draw central X
-font_center = get_font(40)
+font_center = get_font(FONT_SIZE_SCALING_FACTOR)
 text = "X"
 bbox = font_center.getbbox(text)
 w = bbox[2] - bbox[0]
