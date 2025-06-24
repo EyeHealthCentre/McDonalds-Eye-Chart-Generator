@@ -14,6 +14,8 @@ SAVE_AS_PDF: bool = True
 SAVE_AS_PNG: bool = True
 SAVE_AS_WEBP: bool = False
 
+Image.MAX_IMAGE_PIXELS = None
+
 def load_images(image_paths: list[str]) -> list[Image.Image]:
     image_objects: list[Image.Image] = []
     for path in image_paths:
