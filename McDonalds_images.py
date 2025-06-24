@@ -72,6 +72,20 @@ for radius, size in zip(radii, font_sizes):
 
         img.paste(icon_resized, (int(x), int(y)), icon_resized)
 
+def add_border(imgdraw: ImageDraw.ImageDraw, dpi: int, thickness_mm: float, border_colour) -> None:
+    thickness_inches: float = thickness_mm / 25.4
+    thickness_pixels: int = int(round(dpi * thickness_inches))
+    w: int
+    h: int
+    w, h = imgdraw._image.size
+
+    imgdraw.rectangle((0, 0, w, thickness_pixels-1), fill=border_colour)
+    imgdraw.rectangle((0, h - thickness_pixels, w, h-1), fill=border_colour)
+    imgdraw.rectangle((0, 0, thickness_pixels-1, h), fill=border_colour)
+    imgdraw.rectangle((w - thickness_pixels, 0, w-1, h), fill=border_colour)
+
+add_border(draw, DPI, 1.0, 127)
+
 if SAVE_AS_PDF:
     img.save("mcdonald_eye_chart_images.pdf")
     print("Saved McDonald eye chart as 'mcdonald_eye_chart_images.pdf'")
