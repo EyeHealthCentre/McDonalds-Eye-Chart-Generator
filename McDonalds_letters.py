@@ -11,7 +11,7 @@ if __name__ == "__main__":
     font_sizes: list[int] = [int(McDonalds.FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
 
     # Letters used in eye charts (no ambiguous ones)
-    letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]*2
+    letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]
 
     img: Image.Image = Image.new("L", (McDonalds.IMG_SIZE, McDonalds.IMG_SIZE), "white")
     draw: ImageDraw.ImageDraw = ImageDraw.Draw(img)

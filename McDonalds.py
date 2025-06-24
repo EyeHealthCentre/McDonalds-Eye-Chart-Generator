@@ -11,7 +11,7 @@ CENTER: int = IMG_SIZE // 2
 RADII_SCALING_FACTOR: int = DPI * 6
 FONT_SIZE_SCALING_FACTOR: int = int(DPI / 6)
 SAVE_AS_PDF: bool = True
-SAVE_AS_PNG: bool = True
+SAVE_AS_PNG: bool = False
 SAVE_AS_WEBP: bool = False
 
 Image.MAX_IMAGE_PIXELS = None
@@ -51,6 +51,7 @@ def draw_center_letter(imgdraw: ImageDraw.ImageDraw, font_size: int, text: str =
 
 def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes: list[int], letters: list[str], letters_per_ring: int = 8) -> None:
     center: int = imgdraw._image.size[0] // 2
+    letters_in_chart: list[str] = list()
     for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
         angle_step: float = 360 / letters_per_ring
         font: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
@@ -62,10 +63,11 @@ def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes
 
             # Get a random letter
             letter_index: int = random.randrange(len(letters))
-            while letters[letter_index] in letters_in_ring:
+            while letters[letter_index] in letters_in_ring or letters_in_chart.count(letters[letter_index]) > 1:
                 letter_index = random.randrange(len(letters))
-            letter: str = letters.pop(letter_index)
+            letter: str = letters[letter_index]
             letters_in_ring.append(letter)
+            letters_in_chart.append(letter)
 
             # Calculate position on the ring
             x: float = center + radius * math.cos(angle_rad)
