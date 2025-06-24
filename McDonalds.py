@@ -49,7 +49,7 @@ def draw_center_letter(imgdraw: ImageDraw.ImageDraw, font_size: int, text: str =
     center: int = imgdraw._image.size[0] // 2
     imgdraw.text((center - w/2, center - h/2), text, font=font_center, fill="black")
 
-def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes: list[int], letters: list[str], letters_per_ring: int = 8) -> None:
+def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes: list[int], letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"], letters_per_ring: int = 8) -> None:
     center: int = imgdraw._image.size[0] // 2
     letters_in_chart: list[str] = list()
     for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):

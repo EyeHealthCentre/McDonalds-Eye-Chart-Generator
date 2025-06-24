@@ -17,7 +17,7 @@ if __name__ == "__main__":
     draw: ImageDraw.ImageDraw = ImageDraw.Draw(img)
 
     McDonalds.draw_center_letter(draw, McDonalds.FONT_SIZE_SCALING_FACTOR)
-    McDonalds.draw_letter_rings(draw, radii, font_sizes, letters)
+    McDonalds.draw_letter_rings(draw, radii, font_sizes)
     McDonalds.add_border(draw, McDonalds.DPI, 1.0, 127)
 
     if McDonalds.SAVE_AS_PDF:
