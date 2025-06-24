@@ -13,63 +13,51 @@ SAVE_AS_PDF: bool = True
 SAVE_AS_PNG: bool = True
 SAVE_AS_WEBP: bool = False
 
-# Radii for the 4 rings (evenly spaced within the canvas)
-radii: list[int] = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
-
-# Font sizes increasing outward
-font_sizes: list[int] = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
-
-# Letters used in eye charts (no ambiguous ones)
-letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]*2
-
-img: Image.Image = Image.new("L", (IMG_SIZE, IMG_SIZE), "white")
-draw: ImageDraw.ImageDraw = ImageDraw.Draw(img)
-
 def get_font(size: float) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     try:
         return ImageFont.truetype("DejaVuSans-Bold.ttf", size)
     except IOError:
         return ImageFont.load_default()
 
-# Utility: get text width and height using font.getbbox
-def get_text_dimensions(text: str, font: ImageFont.FreeTypeFont | ImageFont.ImageFont) -> tuple[int | float, int | float]:
+def get_text_dimensions(text: str, font: ImageFont.FreeTypeFont | ImageFont.ImageFont) -> tuple[int, int] | tuple[float, float]:
     bbox: tuple[float, float, float, float] | tuple[int, int, int, int] = font.getbbox(text)
     width: int | float = bbox[2] - bbox[0]
     height: int | float = bbox[3] - bbox[1]
     return width, height
 
-# Draw central X
-font_center: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(FONT_SIZE_SCALING_FACTOR)
-text = "X"
-w: int | float
-h: int | float
-w, h = get_text_dimensions(text, font_center)
-draw.text((CENTER - w/2, CENTER - h/2), text, font=font_center, fill="black")
+def draw_center_letter(imgdraw: ImageDraw.ImageDraw, font_size: int, text: str = "X") -> None:
+    font_center: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
+    w: int | float
+    h: int | float
+    w, h = get_text_dimensions(text, font_center)
+    imgdraw.text((CENTER - w/2, CENTER - h/2), text, font=font_center, fill="black")
 
-# Draw each ring
-for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
-    angle_step: float = 360 / 8  # 8 letters per ring
-    font: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
-    letters_in_ring: list[str] = list()
+def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes: list[int], letters_per_ring: int = 8) -> None:
+    for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
+        angle_step: float = 360 / letters_per_ring
+        font: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
+        letters_in_ring: list[str] = list()
 
-    for i in range(8):
-        angle_deg: float = i * angle_step
-        angle_rad: float = math.radians(angle_deg)
+        for i in range(letters_per_ring):
+            angle_deg: float = i * angle_step
+            angle_rad: float = math.radians(angle_deg)
 
-        # Get a random letter
-        letter_index: int = random.randrange(len(letters))
-        while letters[letter_index] in letters_in_ring:
-            letter_index = random.randrange(len(letters))
-        letter: str = letters.pop(letter_index)
-        letters_in_ring.append(letter)
+            # Get a random letter
+            letter_index: int = random.randrange(len(letters))
+            while letters[letter_index] in letters_in_ring:
+                letter_index = random.randrange(len(letters))
+            letter: str = letters.pop(letter_index)
+            letters_in_ring.append(letter)
 
-        # Calculate position on the ring
-        x: float = CENTER + radius * math.cos(angle_rad)
-        y: float = CENTER + radius * math.sin(angle_rad)
+            # Calculate position on the ring
+            x: float = CENTER + radius * math.cos(angle_rad)
+            y: float = CENTER + radius * math.sin(angle_rad)
 
-        # Center the text
-        w, h = get_text_dimensions(letter, font)
-        draw.text((x - w/2, y - h/2), letter, font=font, fill="black")
+            # Center the text
+            w: int | float
+            h: int | float
+            w, h = get_text_dimensions(letter, font)
+            imgdraw.text((x - w/2, y - h/2), letter, font=font, fill="black")
 
 def add_border(imgdraw: ImageDraw.ImageDraw, dpi: int, thickness_mm: float, border_colour) -> None:
     thickness_inches: float = thickness_mm / 25.4
@@ -83,14 +71,30 @@ def add_border(imgdraw: ImageDraw.ImageDraw, dpi: int, thickness_mm: float, bord
     imgdraw.rectangle((0, 0, thickness_pixels-1, h), fill=border_colour)
     imgdraw.rectangle((w - thickness_pixels, 0, w-1, h), fill=border_colour)
 
-add_border(draw, DPI, 1.0, 127)
 
-if SAVE_AS_PDF:
-    img.save("mcdonald_eye_chart.pdf")
-    print("Saved McDonald eye chart as 'mcdonald_eye_chart.pdf'")
-if SAVE_AS_PNG:
-    img.save("mcdonald_eye_chart.png", optimize=True, compress_level=9)
-    print("Saved McDonald eye chart as 'mcdonald_eye_chart.png'")
-if SAVE_AS_WEBP:
-    img.save("mcdonald_eye_chart.webp", lossless=True, quality=100, method=6)
-    print("Saved McDonald eye chart as 'mcdonald_eye_chart.webp'")
+if __name__ == "__main__":
+    # Radii for the 4 rings (evenly spaced within the canvas)
+    radii: list[int] = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
+
+    # Font sizes increasing outward
+    font_sizes: list[int] = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
+
+    # Letters used in eye charts (no ambiguous ones)
+    letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]*2
+
+    img: Image.Image = Image.new("L", (IMG_SIZE, IMG_SIZE), "white")
+    draw: ImageDraw.ImageDraw = ImageDraw.Draw(img)
+
+    draw_center_letter(draw, FONT_SIZE_SCALING_FACTOR)
+    draw_letter_rings(draw, radii, font_sizes)
+    add_border(draw, DPI, 1.0, 127)
+
+    if SAVE_AS_PDF:
+        img.save("mcdonald_eye_chart.pdf")
+        print("Saved McDonald eye chart as 'mcdonald_eye_chart.pdf'")
+    if SAVE_AS_PNG:
+        img.save("mcdonald_eye_chart.png", optimize=True, compress_level=9)
+        print("Saved McDonald eye chart as 'mcdonald_eye_chart.png'")
+    if SAVE_AS_WEBP:
+        img.save("mcdonald_eye_chart.webp", lossless=True, quality=100, method=6)
+        print("Saved McDonald eye chart as 'mcdonald_eye_chart.webp'")
