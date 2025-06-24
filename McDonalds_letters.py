@@ -1,100 +1,31 @@
-from PIL import Image, ImageDraw, ImageFont
-import math
-import random
+from PIL import Image, ImageDraw
 
-# === Configuration ===
-DPI: int = 1200
-INCHES: float = 12
-IMG_SIZE: int = int(DPI * INCHES)
-CENTER: int = IMG_SIZE // 2
-RADII_SCALING_FACTOR: int = DPI * 6
-FONT_SIZE_SCALING_FACTOR: int = int(DPI / 6)
-SAVE_AS_PDF: bool = True
-SAVE_AS_PNG: bool = True
-SAVE_AS_WEBP: bool = False
-
-def get_font(size: float) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    try:
-        return ImageFont.truetype("DejaVuSans-Bold.ttf", size)
-    except IOError:
-        return ImageFont.load_default()
-
-def get_text_dimensions(text: str, font: ImageFont.FreeTypeFont | ImageFont.ImageFont) -> tuple[int, int] | tuple[float, float]:
-    bbox: tuple[float, float, float, float] | tuple[int, int, int, int] = font.getbbox(text)
-    width: int | float = bbox[2] - bbox[0]
-    height: int | float = bbox[3] - bbox[1]
-    return width, height
-
-def draw_center_letter(imgdraw: ImageDraw.ImageDraw, font_size: int, text: str = "X") -> None:
-    font_center: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
-    w: int | float
-    h: int | float
-    w, h = get_text_dimensions(text, font_center)
-    imgdraw.text((CENTER - w/2, CENTER - h/2), text, font=font_center, fill="black")
-
-def draw_letter_rings(imgdraw: ImageDraw.ImageDraw, radii: list[int], font_sizes: list[int], letters_per_ring: int = 8) -> None:
-    for ring_idx, (radius, font_size) in enumerate(zip(radii, font_sizes)):
-        angle_step: float = 360 / letters_per_ring
-        font: ImageFont.FreeTypeFont | ImageFont.ImageFont = get_font(font_size)
-        letters_in_ring: list[str] = list()
-
-        for i in range(letters_per_ring):
-            angle_deg: float = i * angle_step
-            angle_rad: float = math.radians(angle_deg)
-
-            # Get a random letter
-            letter_index: int = random.randrange(len(letters))
-            while letters[letter_index] in letters_in_ring:
-                letter_index = random.randrange(len(letters))
-            letter: str = letters.pop(letter_index)
-            letters_in_ring.append(letter)
-
-            # Calculate position on the ring
-            x: float = CENTER + radius * math.cos(angle_rad)
-            y: float = CENTER + radius * math.sin(angle_rad)
-
-            # Center the text
-            w: int | float
-            h: int | float
-            w, h = get_text_dimensions(letter, font)
-            imgdraw.text((x - w/2, y - h/2), letter, font=font, fill="black")
-
-def add_border(imgdraw: ImageDraw.ImageDraw, dpi: int, thickness_mm: float, border_colour) -> None:
-    thickness_inches: float = thickness_mm / 25.4
-    thickness_pixels: int = int(round(dpi * thickness_inches))
-    w: int
-    h: int
-    w, h = imgdraw._image.size
-
-    imgdraw.rectangle((0, 0, w, thickness_pixels-1), fill=border_colour)
-    imgdraw.rectangle((0, h - thickness_pixels, w, h-1), fill=border_colour)
-    imgdraw.rectangle((0, 0, thickness_pixels-1, h), fill=border_colour)
-    imgdraw.rectangle((w - thickness_pixels, 0, w-1, h), fill=border_colour)
+import McDonalds
 
 
 if __name__ == "__main__":
     # Radii for the 4 rings (evenly spaced within the canvas)
-    radii: list[int] = [int(RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
+    radii: list[int] = [int(McDonalds.RADII_SCALING_FACTOR*i) for i in [0.1, 0.2, 0.4, 0.8]]
 
     # Font sizes increasing outward
-    font_sizes: list[int] = [int(FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
+    font_sizes: list[int] = [int(McDonalds.FONT_SIZE_SCALING_FACTOR*i) for i in [1, 2, 4, 8]]
 
     # Letters used in eye charts (no ambiguous ones)
     letters: list[str] = ["A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","R","S","T","U","V","W","X","Y","Z"]*2
 
-    img: Image.Image = Image.new("L", (IMG_SIZE, IMG_SIZE), "white")
+    img: Image.Image = Image.new("L", (McDonalds.IMG_SIZE, McDonalds.IMG_SIZE), "white")
     draw: ImageDraw.ImageDraw = ImageDraw.Draw(img)
 
-    draw_center_letter(draw, FONT_SIZE_SCALING_FACTOR)
-    draw_letter_rings(draw, radii, font_sizes)
-    add_border(draw, DPI, 1.0, 127)
+    McDonalds.draw_center_letter(draw, McDonalds.FONT_SIZE_SCALING_FACTOR)
+    McDonalds.draw_letter_rings(draw, radii, font_sizes, letters)
+    McDonalds.add_border(draw, McDonalds.DPI, 1.0, 127)
 
-    if SAVE_AS_PDF:
+    if McDonalds.SAVE_AS_PDF:
         img.save("mcdonald_eye_chart.pdf")
         print("Saved McDonald eye chart as 'mcdonald_eye_chart.pdf'")
-    if SAVE_AS_PNG:
+    if McDonalds.SAVE_AS_PNG:
         img.save("mcdonald_eye_chart.png", optimize=True, compress_level=9)
         print("Saved McDonald eye chart as 'mcdonald_eye_chart.png'")
-    if SAVE_AS_WEBP:
+    if McDonalds.SAVE_AS_WEBP:
         img.save("mcdonald_eye_chart.webp", lossless=True, quality=100, method=6)
         print("Saved McDonald eye chart as 'mcdonald_eye_chart.webp'")
